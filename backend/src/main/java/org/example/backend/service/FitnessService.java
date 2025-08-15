@@ -17,7 +17,7 @@ public class FitnessService {
     }
 
 
-    //todo Add dummy data to show
+
      Workout dummy=new Workout("1","Description text","Running");
      Workout dummy2=new Workout("2","Description text2","Lifting");
      List<Workout> workouts=List.of(dummy,dummy2);
