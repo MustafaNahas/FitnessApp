@@ -1,12 +1,12 @@
-import './App.css'
-import ViewWorlouts from "./view/ViewWorlouts.tsx";
+import "./App.css";
+import ViewWorkouts from "./component/ViewWorkouts.tsx";
 
 function App() {
 
 
   return (
     <>
-      <ViewWorlouts />
+      <ViewWorkouts />
     </>
   )
 }
