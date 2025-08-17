@@ -22,7 +22,7 @@
     padding: 1rem;
 }
 .workout-card h2{
-    color: rgba(0,255,0, 100);
+    color: rgb(0, 210, 0);
 }
 @media (min-width: 650px){
     /*PC and tablet view*/
