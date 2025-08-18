@@ -28,6 +28,8 @@
     </scm>
     <properties>
         <java.version>21</java.version>
+        <sonar.organization>mustafanahas</sonar.organization>
+        <sonar.projectName>FitnessApp</sonar.projectName>
     </properties>
     <dependencies>
         <dependency>
