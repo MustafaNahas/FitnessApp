@@ -16,11 +16,9 @@ public class FitnessService {
         this.repo = repo;
     }
 
-
-
-     Workout dummy=new Workout("1","Description text","Running");
-     Workout dummy2=new Workout("2","Description text2","Lifting");
-     List<Workout> workouts=List.of(dummy,dummy2);
+//     Workout dummy=new Workout("1","Description text","Running");
+//     Workout dummy2=new Workout("2","Description text2","Lifting");
+//     List<Workout> workouts=List.of(dummy,dummy2);
     public List<Workout> getAllWorkouts(){
         return repo.findAll();
     }
