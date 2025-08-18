@@ -42,4 +42,18 @@ class FitnessControllerTest {
                 """
                 ));
     }
+
+    @Test
+    void getWorkoutById() throws Exception {
+        repo.save(dummy);
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/workouts/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().json("""
+                  {
+                    id : "1",
+                    description: "Description text",
+                    workoutName: "Running"
+                  }
+                """));
+    }
 }
