@@ -63,4 +63,29 @@ class FitnessControllerTest {
                   }
                 """));
     }
+
+
+    @Test
+    void deleteWorkout_existingId_returns204() throws Exception {
+        // Arrange
+        repo.deleteAll();
+        repo.save(dummy);
+
+        // Act + Assert
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/workouts/{id}", "1"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deleteWorkout_nonExistingId_returns404() throws Exception {
+        // Arrange
+        repo.deleteAll();
+
+        // Act + Assert
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/workouts/{id}", "doesNotExist"))
+                .andExpect(status().isNotFound());
+    }
+
+
+
 }

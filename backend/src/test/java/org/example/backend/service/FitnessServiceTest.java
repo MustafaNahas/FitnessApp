@@ -63,4 +63,26 @@ class FitnessServiceTest {
 
         verify(fitnessRepo).findById(id);
     }
+    @Test
+    void deleteWorkoutById_whenExists_deletes() {
+        String id = "1";
+        when(fitnessRepo.existsById(id)).thenReturn(true);
+
+        fitnessService.deleteWorkoutById(id);
+
+        verify(fitnessRepo).deleteById(id);
+    }
+
+    @Test
+    void deleteWorkoutById_whenNotExists_throws() {
+        String id = "doesNotExist";
+        when(fitnessRepo.existsById(id)).thenReturn(false);
+
+        assertThrows(IllegalArgumentException.class,
+                () -> fitnessService.deleteWorkoutById(id));
+        verify(fitnessRepo, never()).deleteById(anyString());
+    }
+
+
+
 }

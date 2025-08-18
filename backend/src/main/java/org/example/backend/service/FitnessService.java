@@ -1,5 +1,6 @@
 package org.example.backend.service;
 
+import org.example.backend.exception.NotFoundException;
 import org.example.backend.repo.FitnessRepo;
 import org.example.backend.model.Workout;
 import org.springframework.stereotype.Service;
@@ -29,4 +30,13 @@ public class FitnessService {
         return repo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Workout not found"));
     }
+
+
+    public void deleteWorkoutById(String id) {
+        if (!repo.existsById(id)) {
+            throw new NotFoundException("Workout not found: " + id);
+        }
+        repo.deleteById(id);
+    }
+
 }
