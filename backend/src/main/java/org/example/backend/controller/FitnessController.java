@@ -2,9 +2,8 @@ package org.example.backend.controller;
 
 import org.example.backend.model.Workout;
 import org.example.backend.service.FitnessService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,5 +21,12 @@ public class FitnessController {
     public List<Workout> getAllWorkouts(){
         return service.getAllWorkouts();
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        service.deleteWorkoutById(id);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }
