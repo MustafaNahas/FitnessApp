@@ -36,7 +36,7 @@ class FitnessControllerTest {
                        {
                          id: "1",
                          description: "Description text",
-                         workoutName: "Running"
+                         workoutName: "Running."
                        }
                     ]
                 """
