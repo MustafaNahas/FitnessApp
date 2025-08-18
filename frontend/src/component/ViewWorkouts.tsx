@@ -2,67 +2,45 @@ import "../App.css"
 import {useEffect, useState} from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faDumbbell, faPersonBiking, faPersonRunning, faPersonWalking, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {faDumbbell, faPersonBiking, faPersonRunning, faPersonWalking} from "@fortawesome/free-solid-svg-icons";
 
 export default function ViewWorkouts(){
 
     const [workouts, setWorkouts] = useState([{id: "", description: "", workoutName: ""}]);
-
-    function loadWorkouts() {
+    function loadTodos() {
         axios.get("/api/workouts")
             .then(res => {
                 setWorkouts(res.data);
             })
             .catch(err => {
-                console.error(err);
-                alert("Fehler beim Laden der Workouts");
+                console.error(err)
+                alert(err)
             });
     }
 
     useEffect(() => {
-        loadWorkouts();
+        loadTodos();
     }, []);
-
-    async function handleDelete(id: string) {
-        const confirmed = window.confirm("Möchten Sie dieses Workout wirklich löschen?");
-        if (!confirmed) return;
-
-        try {
-            await axios.delete(`/api/workouts/${id}`);
-            // Workout aus dem State entfernen
-            setWorkouts(prev => prev.filter(w => w.id !== id));
-        } catch (err) {
-            console.error(err);
-            alert("Fehler beim Löschen des Workouts");
-        }
-    }
 
     return(
         <div className={"ViewWorkouts"}>
             <h1>Workouts</h1>
             {workouts.map(workout => (
                 <div key={workout.id} className="workout-card">
-                    {workout.workoutName==="Running" &&
-                        <h2><FontAwesomeIcon icon={faPersonRunning} /> {workout.workoutName}</h2>
+                    {workout.workoutName==="Running"?
+                        <h2><FontAwesomeIcon icon={faPersonRunning} /> {workout.workoutName}</h2>:null
                     }
-                    {workout.workoutName==="Walking" &&
-                        <h2><FontAwesomeIcon icon={faPersonWalking} /> {workout.workoutName}</h2>
+                    {workout.workoutName==="Walking"?
+                        <h2><FontAwesomeIcon icon={faPersonWalking} /> {workout.workoutName}</h2>:null
                     }
-                    {workout.workoutName==="Cycling" &&
-                        <h2><FontAwesomeIcon icon={faPersonBiking} /> {workout.workoutName}</h2>
+                    {workout.workoutName==="Cycling"?
+                        <h2><FontAwesomeIcon icon={faPersonBiking} /> {workout.workoutName}</h2>:null
                     }
-                    {workout.workoutName==="Weight training" &&
-                        <h2><FontAwesomeIcon icon={faDumbbell} /> {workout.workoutName}</h2>
+                    {workout.workoutName==="Weight training"?
+                        <h2><FontAwesomeIcon icon={faDumbbell} /> {workout.workoutName}</h2>:null
                     }
 
-                    <p><strong>Beschreibung:</strong> {workout.description}</p>
-
-                    <button
-                        className="delete-btn"
-                        onClick={() => handleDelete(workout.id)}
-                    >
-                        <FontAwesomeIcon icon={faTrash} /> Löschen
-                    </button>
+                    <p><strong>Description:</strong> {workout.description}</p>
                 </div>
             ))}
         </div>
