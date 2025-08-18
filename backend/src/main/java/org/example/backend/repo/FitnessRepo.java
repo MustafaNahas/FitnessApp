@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FitnessRepo extends MongoRepository<Workout,String> {
-    Workout getWorkoutById(String id);
 }
 
