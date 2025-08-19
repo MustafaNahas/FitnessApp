@@ -28,7 +28,7 @@ public class FitnessService {
 
     public Workout addWorkout(WorkoutDto workoutDto) {
         if(workoutDto.workoutName()==null||workoutDto.workoutName().isBlank()){
-            throw new IllegalArgumentException("Workout cannot be null or blank.");
+            throw new NullPointerException("Workout cannot be null or blank.");
         }
 
         Workout newWorkout=new Workout(

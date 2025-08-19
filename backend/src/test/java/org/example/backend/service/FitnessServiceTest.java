@@ -57,6 +57,15 @@ class FitnessServiceTest {
 
 
     }
+    @Test
+    void addWorkout_whenNullOrBlank_ThenThrowException() {
+        // Given
+        WorkoutDto dto = new WorkoutDto("", "Running");
+
+        // When + Then
+        assertThrows(NullPointerException.class,
+                () -> fitnessService.addWorkout(dto));
+    }
 
     @Test
     void getWorkoutById_whenValidId_ThenReturnWorkout() {
