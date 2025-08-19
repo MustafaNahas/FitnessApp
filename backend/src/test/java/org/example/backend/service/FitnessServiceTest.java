@@ -1,5 +1,6 @@
 package org.example.backend.service;
 
+import org.example.backend.dto.WorkoutDto;
 import org.example.backend.exception.NotFoundException;
 import org.example.backend.model.Workout;
 import org.example.backend.repo.FitnessRepo;
@@ -29,12 +30,32 @@ class FitnessServiceTest {
     @Test
     void getAllWorkouts() {
         FitnessRepo mockRepo=mock(FitnessRepo.class);
-        FitnessService fitnessService=new FitnessService(mockRepo);
+        IdService mockIdService=mock(IdService.class);
+        FitnessService fitnessService=new FitnessService(mockRepo,mockIdService);
 
         when(mockRepo.findAll()).thenReturn(dummyWorkouts);
         List<Workout> workouts= fitnessService.getAllWorkouts();
         assertEquals(2,workouts.size());
         assertEquals(dummy,workouts.getFirst());
+        assertEquals(dummyWorkouts,workouts);
+    }
+
+    @Test
+    void addWorkout() {
+        WorkoutDto dto=new WorkoutDto("Test","Running");
+        IdService idService=mock(IdService.class);
+        when(idService.generateId()).thenReturn("1");
+
+        FitnessRepo repo=mock(FitnessRepo.class);
+        Workout expectedWorkout= new Workout(idService.generateId(), dto.description(),dto.workoutName());
+        when(repo.save(expectedWorkout)).thenReturn(expectedWorkout);
+
+        Workout actualWorkout= repo.save(expectedWorkout);
+
+        assertEquals(actualWorkout,expectedWorkout);
+        verify(repo).save(expectedWorkout);
+
+
     }
 
     @Test
@@ -84,7 +105,4 @@ class FitnessServiceTest {
                 () -> fitnessService.deleteWorkoutById(id));
         verify(fitnessRepo, never()).deleteById(anyString());
     }
-
-
-
 }

@@ -18,14 +18,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureMockRestServiceServer
 class FitnessControllerTest {
-
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private FitnessRepo repo;
 
-    Workout dummy = new Workout("1","Description text","Running");
+    Workout dummy=new Workout("1","Description text","Running");
     Workout dummy2 = new Workout("2","Description text2","Lifting");
 
     @BeforeEach

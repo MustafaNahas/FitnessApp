@@ -1,5 +1,6 @@
 package org.example.backend.service;
 
+import org.example.backend.dto.WorkoutDto;
 import org.example.backend.exception.NotFoundException;
 import org.example.backend.repo.FitnessRepo;
 import org.example.backend.model.Workout;
@@ -11,19 +12,31 @@ import java.util.List;
 public class FitnessService {
     // private final Mongo
     private final FitnessRepo repo;
+    private final IdService idService;
 
-
-    public FitnessService(FitnessRepo repo) {
+    public FitnessService(FitnessRepo repo,IdService idService) {
+        this.idService=idService;
         this.repo = repo;
-        repo.saveAll(workouts);
     }
 
-     Workout dummy=new Workout("1","Description text","Running");
-     Workout dummy2=new Workout("2","Description text2","Lifting");
-     List<Workout> workouts=List.of(dummy,dummy2);
+//     Workout dummy=new Workout("1","Description text","Running");
+//     Workout dummy2=new Workout("2","Description text2","Lifting");
+//     List<Workout> workouts=List.of(dummy,dummy2);
     public List<Workout> getAllWorkouts(){
-
         return repo.findAll();
+    }
+
+    public Workout addWorkout(WorkoutDto workoutDto) {
+        if(workoutDto.workoutName()==null||workoutDto.workoutName().isBlank()){
+            throw new IllegalArgumentException("Workout cannot be null or blank.");
+        }
+
+        Workout newWorkout=new Workout(
+                idService.generateId(),
+                workoutDto.description(),
+                workoutDto.workoutName()
+        );
+        return repo.save(newWorkout);
     }
 
     public Workout getWorkoutById(String id) {
@@ -38,5 +51,4 @@ public class FitnessService {
         }
         repo.deleteById(id);
     }
-
 }
