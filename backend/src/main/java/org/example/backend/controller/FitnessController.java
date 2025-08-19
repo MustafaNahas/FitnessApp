@@ -1,8 +1,15 @@
 package org.example.backend.controller;
 
+import org.example.backend.dto.WorkoutDto;
 import org.example.backend.model.Workout;
 import org.example.backend.service.FitnessService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +27,11 @@ public class FitnessController {
     @GetMapping("/workouts")
     public List<Workout> getAllWorkouts(){
         return service.getAllWorkouts();
+    }
+
+    @PostMapping("/workouts")
+    public ResponseEntity<Workout> addWorkout(@RequestBody WorkoutDto workoutDto){
+        return new ResponseEntity<>(service.addWorkout(workoutDto), HttpStatus.CREATED);
     }
 
     @GetMapping("/workouts/{id}")
