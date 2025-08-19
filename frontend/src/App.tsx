@@ -12,6 +12,7 @@ function App() {
                 <Route path="/" element={<Navigate to="/workouts" />} />
                 <Route path="/workouts" element={<ViewWorkouts />} />
                 <Route path="/workouts/:id" element={<ViewWorkout />} />
+                <Route path="/workouts/add" element={<ViewWorkout />} />
             </Routes>
     </>
   )
