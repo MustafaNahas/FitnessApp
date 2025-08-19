@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockRestServiceServer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -26,8 +27,10 @@ class FitnessControllerTest {
     @Autowired
     private FitnessRepo repo;
 
-    Workout dummy=new Workout("1","Description text","Running");
-    Workout dummy2 = new Workout("2","Description text2","Lifting");
+
+    Workout dummy = new Workout("1", "Description text", "Running");
+    Workout dummy2 = new Workout("2", "Description text2", "Lifting");
+
 
     @BeforeEach
     void cleanDb() {
@@ -82,6 +85,42 @@ class FitnessControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void updateWorkout_existingId_returnsUpdatedWorkout() throws Exception {
+        // given
+        repo.save(dummy);
+
+        // when + then
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/workouts/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                {
+                    "id": "1",
+                    "description": "Updated description",
+                    "workoutName": "Updated workout"
+                }
+                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("1"))
+                .andExpect(jsonPath("$.description").value("Updated description"))
+                .andExpect(jsonPath("$.workoutName").value("Updated workout"));
+    }
+
+    @Test
+    void updateWorkout_nonExistingId_returns404() throws Exception {
+        // when + then
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/workouts/nonExisting")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                {
+                    "id": "nonExisting",
+                    "description": "Updated description",
+                    "workoutName": "Updated workout"
+                }
+                """))
+                .andExpect(status().isNotFound());
+    }
+
     @MockitoBean
     private IdService idService;
     @Test
@@ -107,5 +146,6 @@ class FitnessControllerTest {
                     workoutName: "Running"
                   }
                 """));
+
     }
 }
