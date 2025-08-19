@@ -1,5 +1,6 @@
 package org.example.backend.service;
 
+import org.example.backend.exception.NotFoundException;
 import org.example.backend.model.Workout;
 import org.example.backend.repo.FitnessRepo;
 import org.junit.jupiter.api.Test;
@@ -58,8 +59,9 @@ class FitnessServiceTest {
         when(fitnessRepo.findById(id)).thenReturn(Optional.empty());
 
         // When + Then
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NotFoundException.class,
                 () -> fitnessService.getWorkoutById(id));
+
 
         verify(fitnessRepo).findById(id);
     }
@@ -78,7 +80,7 @@ class FitnessServiceTest {
         String id = "doesNotExist";
         when(fitnessRepo.existsById(id)).thenReturn(false);
 
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NotFoundException.class,
                 () -> fitnessService.deleteWorkoutById(id));
         verify(fitnessRepo, never()).deleteById(anyString());
     }

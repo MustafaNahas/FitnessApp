@@ -28,7 +28,7 @@ public class FitnessService {
 
     public Workout getWorkoutById(String id) {
         return repo.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Workout not found"));
+                .orElseThrow(() -> new NotFoundException("Workout not found: " + id));
     }
 
 
