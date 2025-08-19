@@ -1,5 +1,6 @@
 package org.example.backend.service;
 
+import org.example.backend.exception.NotFoundException;
 import org.example.backend.model.Workout;
 import org.example.backend.repo.FitnessRepo;
 import org.junit.jupiter.api.Test;
@@ -58,9 +59,32 @@ class FitnessServiceTest {
         when(fitnessRepo.findById(id)).thenReturn(Optional.empty());
 
         // When + Then
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(NotFoundException.class,
                 () -> fitnessService.getWorkoutById(id));
+
 
         verify(fitnessRepo).findById(id);
     }
+    @Test
+    void deleteWorkoutById_whenExists_deletes() {
+        String id = "1";
+        when(fitnessRepo.existsById(id)).thenReturn(true);
+
+        fitnessService.deleteWorkoutById(id);
+
+        verify(fitnessRepo).deleteById(id);
+    }
+
+    @Test
+    void deleteWorkoutById_whenNotExists_throws() {
+        String id = "doesNotExist";
+        when(fitnessRepo.existsById(id)).thenReturn(false);
+
+        assertThrows(NotFoundException.class,
+                () -> fitnessService.deleteWorkoutById(id));
+        verify(fitnessRepo, never()).deleteById(anyString());
+    }
+
+
+
 }
