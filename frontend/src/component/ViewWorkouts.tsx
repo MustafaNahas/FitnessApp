@@ -9,8 +9,7 @@ import {
     faPersonWalking,
     faTrash
 } from "@fortawesome/free-solid-svg-icons";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-expect-error
+
 import {useNavigate} from "react-router-dom";
 
 export default function ViewWorkouts(){
