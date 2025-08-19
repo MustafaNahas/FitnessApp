@@ -32,5 +32,12 @@ public class FitnessController {
         service.deleteWorkoutById(id);
         return ResponseEntity.noContent().build(); // 204
     }
+    @PutMapping("/workouts/{id}")
+    public ResponseEntity<Workout> updateWorkout(
+            @PathVariable String id,
+            @RequestBody Workout workoutDetails) {
+        Workout updated = service.updateWorkout(id, workoutDetails);
+        return ResponseEntity.ok(updated);
+    }
 
 }

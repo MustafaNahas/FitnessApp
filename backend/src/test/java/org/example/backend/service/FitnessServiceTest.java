@@ -84,7 +84,41 @@ class FitnessServiceTest {
                 () -> fitnessService.deleteWorkoutById(id));
         verify(fitnessRepo, never()).deleteById(anyString());
     }
+    @Test
+    void updateWorkout_whenValidId_ThenReturnUpdatedWorkout() {
+        // Given
+        String id = "1";
+        Workout existingWorkout = new Workout(id, "Old description", "Old workout");
+        Workout updateDetails = new Workout(id, "New description", "New workout");
+        Workout expectedUpdated = new Workout(id, "New description", "New workout");
 
+        when(fitnessRepo.findById(id)).thenReturn(Optional.of(existingWorkout));
+        when(fitnessRepo.save(any(Workout.class))).thenReturn(expectedUpdated);
+
+        // When
+        Workout actualUpdated = fitnessService.updateWorkout(id, updateDetails);
+
+        // Then
+        assertEquals(expectedUpdated, actualUpdated);
+        verify(fitnessRepo).findById(id);
+        verify(fitnessRepo).save(any(Workout.class));
+    }
+
+    @Test
+    void updateWorkout_whenInvalidId_ThenThrowException() {
+        // Given
+        String id = "nonExisting";
+        Workout updateDetails = new Workout(id, "New description", "New workout");
+
+        when(fitnessRepo.findById(id)).thenReturn(Optional.empty());
+
+        // When + Then
+        assertThrows(NotFoundException.class,
+                () -> fitnessService.updateWorkout(id, updateDetails));
+
+        verify(fitnessRepo).findById(id);
+        verify(fitnessRepo, never()).save(any(Workout.class));
+    }
 
 
 }

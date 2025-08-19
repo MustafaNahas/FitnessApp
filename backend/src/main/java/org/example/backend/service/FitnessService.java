@@ -38,5 +38,14 @@ public class FitnessService {
         }
         repo.deleteById(id);
     }
+    public Workout updateWorkout(String id, Workout workoutDetails) {
+        Workout existing = repo.findById(id)
+                .orElseThrow(() -> new NotFoundException("Workout not found: " + id));
+            Workout updated = existing
+                .withDescription(workoutDetails.description())
+                .withWorkoutName(workoutDetails.workoutName());
+
+        return repo.save(updated);
+    }
 
 }
