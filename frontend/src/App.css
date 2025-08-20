@@ -9,6 +9,7 @@
     display: flex;
     flex-wrap: wrap;
     flex-direction: column;
+    margin-bottom: 4rem;
 }
 
 .ViewWorkouts h1{
@@ -24,10 +25,52 @@
 .workout-card h2{
     color: rgb(0, 210, 0);
 }
+
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(35, 35, 35, 0.9);
+    color: white;
+    padding: 1rem 0 1rem 0;
+    text-align: center;
+    z-index: 1000;
+}
+
+nav button {
+    padding: 1rem 1rem;
+    border-radius: 8px;
+    border: none;
+    background: #444;
+    color: white;
+    cursor: pointer;
+}
+button{
+    transition: transform 0.4s ease, box-shadow 0.2s;
+}
+
+button:hover{
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 50%);
+    transform: scale(1.1);
+}
+
 @media (min-width: 650px){
     /*PC and tablet view*/
     /*CSS overwrite*/
     .ViewWorkouts{
         flex-direction: row;
+    }
+    body {
+        margin-top: 2rem;  /* space for top nav */
+        margin-bottom: 0;  /* reset */
+    }
+    nav {
+        top: 0;
+        bottom: auto;
+        padding: 1rem 0;
     }
 }
