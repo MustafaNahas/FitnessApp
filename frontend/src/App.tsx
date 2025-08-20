@@ -5,6 +5,7 @@ import ViewWorkout from "./component/ViewWorkout.tsx";
 import AddWorkoutForm from "./component/AddWorkoutForm.tsx";
 import Navbar from "./component/Navbar.tsx";
 
+
 function App() {
 
   return (
