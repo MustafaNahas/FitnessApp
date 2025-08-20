@@ -8,7 +8,10 @@ import {
     faPersonRunning,
     faPersonWalking,
 } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate } from "react-router-dom";
+
+
+import {useNavigate} from "react-router-dom";
+
 
 type Workout = {
     id: string;

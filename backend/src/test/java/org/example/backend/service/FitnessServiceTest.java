@@ -1,5 +1,6 @@
 package org.example.backend.service;
 
+import org.example.backend.dto.WorkoutDto;
 import org.example.backend.exception.NotFoundException;
 import org.example.backend.model.Workout;
 import org.example.backend.repo.FitnessRepo;
@@ -29,12 +30,41 @@ class FitnessServiceTest {
     @Test
     void getAllWorkouts() {
         FitnessRepo mockRepo=mock(FitnessRepo.class);
-        FitnessService fitnessService=new FitnessService(mockRepo);
+        IdService mockIdService=mock(IdService.class);
+        FitnessService fitnessService=new FitnessService(mockRepo,mockIdService);
 
         when(mockRepo.findAll()).thenReturn(dummyWorkouts);
         List<Workout> workouts= fitnessService.getAllWorkouts();
         assertEquals(2,workouts.size());
         assertEquals(dummy,workouts.getFirst());
+        assertEquals(dummyWorkouts,workouts);
+    }
+
+    @Test
+    void addWorkout() {
+        WorkoutDto dto=new WorkoutDto("Test","Running");
+        IdService idService=mock(IdService.class);
+        when(idService.generateId()).thenReturn("1");
+
+        FitnessRepo repo=mock(FitnessRepo.class);
+        Workout expectedWorkout= new Workout(idService.generateId(), dto.description(),dto.workoutName());
+        when(repo.save(expectedWorkout)).thenReturn(expectedWorkout);
+
+        Workout actualWorkout= repo.save(expectedWorkout);
+
+        assertEquals(actualWorkout,expectedWorkout);
+        verify(repo).save(expectedWorkout);
+
+
+    }
+    @Test
+    void addWorkout_whenNullOrBlank_ThenThrowException() {
+        // Given
+        WorkoutDto dto = new WorkoutDto("", "Running");
+
+        // When + Then
+        assertThrows(NullPointerException.class,
+                () -> fitnessService.addWorkout(dto));
     }
 
     @Test
@@ -85,6 +115,40 @@ class FitnessServiceTest {
         verify(fitnessRepo, never()).deleteById(anyString());
     }
 
+    @Test
+    void updateWorkout_whenValidId_ThenReturnUpdatedWorkout() {
+        // Given
+        String id = "1";
+        Workout existingWorkout = new Workout(id, "Old description", "Old workout");
+        Workout updateDetails = new Workout(id, "New description", "New workout");
+        Workout expectedUpdated = new Workout(id, "New description", "New workout");
 
+        when(fitnessRepo.findById(id)).thenReturn(Optional.of(existingWorkout));
+        when(fitnessRepo.save(any(Workout.class))).thenReturn(expectedUpdated);
+
+        // When
+        Workout actualUpdated = fitnessService.updateWorkout(id, updateDetails);
+
+        // Then
+        assertEquals(expectedUpdated, actualUpdated);
+        verify(fitnessRepo).findById(id);
+        verify(fitnessRepo).save(any(Workout.class));
+    }
+
+    @Test
+    void updateWorkout_whenInvalidId_ThenThrowException() {
+        // Given
+        String id = "nonExisting";
+        Workout updateDetails = new Workout(id, "New description", "New workout");
+
+        when(fitnessRepo.findById(id)).thenReturn(Optional.empty());
+
+        // When + Then
+        assertThrows(NotFoundException.class,
+                () -> fitnessService.updateWorkout(id, updateDetails));
+
+        verify(fitnessRepo).findById(id);
+        verify(fitnessRepo, never()).save(any(Workout.class));
+    }
 
 }

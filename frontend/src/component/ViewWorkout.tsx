@@ -11,12 +11,32 @@ import {faDumbbell, faPersonBiking, faPersonRunning, faPersonWalking} from "@for
 export default function ViewWorkout() {
     const {id} = useParams();
     const [workout, setWorkout] = useState<workoutType | null>(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [description, setdescription] = useState("");
+    const [workoutName, setworkoutName] = useState("");
 
+    const handleUpdate = () => {
+        if (!id) return;
+
+        const updatedWorkout = {
+            id: id,
+            description: description,
+            workoutName: workoutName
+        };
+
+        axios.put(`/api/workouts/${id}`, updatedWorkout)
+            .then(res => {
+                setWorkout(res.data);
+                setIsEditing(false);
+            })
+            .catch(err => console.error(err));
+    };
     useEffect(() => {
         if (id) {
             axios.get(`/api/workouts/${id}`)
                 .then(res => {
                     setWorkout(res.data);
+                    setdescription(res.data.description);
                     console.log(res.data);
                 })
                 .catch(err => console.error(err));
@@ -40,12 +60,41 @@ export default function ViewWorkout() {
 
     return (
         <div key={workout.id} className="workout-card">
-            <h2>
-                {getIcon(workout.workoutName) &&
-                    <FontAwesomeIcon icon={getIcon(workout.workoutName)!} />}
-                {" "}{workout.workoutName}
-            </h2>
-            <p><strong>Description:</strong> {workout.description}</p>
+            {isEditing ? (
+                <>
+                    <h2>
+                        {getIcon(workout.workoutName) &&
+                            <FontAwesomeIcon icon={getIcon(workout.workoutName)!} />}
+                        {" "}          <select name ="type"
+                                               value={workoutName}
+                                               onChange={(e) => setworkoutName(e.target.value)}
+                    >
+                        <option value="Running">Running</option>
+                        <option value="Walking">Walking</option>
+                        <option value="Cycling">Cycling</option>
+                        <option value="Lifting">Lifting</option>
+                    </select>
+                    </h2>
+                    <strong>Description:</strong>  <input value={description} onChange={(e) => setdescription(e.target.value)} />
+
+
+
+                    <button onClick={handleUpdate}>save</button>
+                    <button onClick={() => setIsEditing(false)}>cancel</button>
+                </>
+                ) : (
+                <>
+                    <h2>
+                        {getIcon(workout.workoutName) &&
+                            <FontAwesomeIcon icon={getIcon(workout.workoutName)!} />}
+                        {" "}{workout.workoutName}
+                    </h2>
+                    <p><strong>Description:</strong> {description}</p>
+
+                    <button onClick={() => setIsEditing(true)}>update</button>
+
+                </>
+                )}
         </div>
     );
 }
