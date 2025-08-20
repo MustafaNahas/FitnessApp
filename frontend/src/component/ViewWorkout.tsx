@@ -6,7 +6,7 @@ import axios from "axios";
 import type {workoutType} from "../type/workoutType.ts";
 import {useParams} from "react-router-dom";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faDumbbell, faPersonBiking, faPersonRunning, faPersonWalking} from "@fortawesome/free-solid-svg-icons";
+import {faDumbbell, faPersonBiking, faPersonRunning, faPersonWalking, faTrash} from "@fortawesome/free-solid-svg-icons";
 
 export default function ViewWorkout() {
     const {id} = useParams();
@@ -14,6 +14,8 @@ export default function ViewWorkout() {
     const [isEditing, setIsEditing] = useState(false);
     const [description, setdescription] = useState("");
     const [workoutName, setworkoutName] = useState("");
+
+    const [workouts, setWorkouts] = useState([{id: "", description: "", workoutName: ""}]);
 
     const handleUpdate = () => {
         if (!id) return;
@@ -58,6 +60,23 @@ export default function ViewWorkout() {
         }
     };
 
+    async function handleDelete(id: string) {
+        const confirmed = window.confirm("Möchten Sie dieses Workout wirklich löschen?");
+        if (!confirmed) return;
+
+        // Optimistic UI
+        const prev = [...workouts];
+        setWorkouts(ws => ws.filter(w => w.id !== id));
+
+        try {
+            await axios.delete(`/api/workouts/${id}`);
+        } catch (e) {
+            console.error(e);
+            alert("Fehler beim Löschen des Workouts");
+            setWorkouts(prev); // rollback bei Fehler
+        }
+    }
+
     return (
         <div key={workout.id} className="workout-card">
             {isEditing ? (
@@ -94,7 +113,18 @@ export default function ViewWorkout() {
                     <button onClick={() => setIsEditing(true)}>update</button>
 
                 </>
-                )}
+
+            )}
+            <>
+                {/* Delete-Button */}
+                <button
+                    type="button"
+                    className="delete-btn"
+                    onClick={(e) => { e.stopPropagation(); handleDelete(workout.id); }}
+                >
+                    <FontAwesomeIcon icon={faTrash} /> Löschen
+                </button>
+            </>
         </div>
     );
 }
