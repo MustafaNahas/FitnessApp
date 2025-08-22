@@ -29,8 +29,8 @@ class FitnessControllerTest {
     private FitnessRepo repo;
 
 
-    Workout dummy = new Workout("1", "Running", null, null, null, false, null);
-    Workout dummy2 = new Workout("2", "Lifting", "Description text2", null, null, false, 20.0);
+    Workout dummy = new Workout("1", "Running", null, null, null, null, null);
+    Workout dummy2 = new Workout("2", "Lifting", "Description text2", null, null, null, 20.0);
 
 
     @BeforeEach
@@ -64,7 +64,11 @@ class FitnessControllerTest {
                   {
                     id : "1",
                     workoutName: "Running",
-                    description: "Description text"
+                    description: null,
+                    "date": null,
+                    "startTime": null,
+                    "favorite": null,
+                    "duration": null
                   }
                 """));
     }
