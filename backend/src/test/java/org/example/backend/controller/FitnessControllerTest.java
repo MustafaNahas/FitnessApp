@@ -101,7 +101,7 @@ class FitnessControllerTest {
                         .content("""
                 {
                     "id": "1",
-                    "workoutName": "Running",
+                    "workoutName": "Updated workout",
                     "description": "Updated description",
                     "date": null,
                     "startTime": null,
