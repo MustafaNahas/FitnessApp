@@ -28,7 +28,7 @@ class FitnessControllerTest {
     @Autowired
     private FitnessRepo repo;
 
-
+//changes
     Workout dummy = new Workout("1", "Running", null, null, null, null, null);
     Workout dummy2 = new Workout("2", "Lifting", "Description text2", null, null, null, 20.0);
 
