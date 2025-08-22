@@ -14,6 +14,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -27,9 +28,9 @@ class FitnessControllerTest {
     @Autowired
     private FitnessRepo repo;
 
-
-    Workout dummy = new Workout("1", "Description text", "Running");
-    Workout dummy2 = new Workout("2", "Description text2", "Lifting");
+//changes
+    Workout dummy = new Workout("1", "Running", null, null, null, null, null);
+    Workout dummy2 = new Workout("2", "Lifting", "Description text2", null, null, null, 20.0);
 
 
     @BeforeEach
@@ -62,8 +63,12 @@ class FitnessControllerTest {
                 .andExpect(content().json("""
                   {
                     id : "1",
-                    description: "Description text",
-                    workoutName: "Running"
+                    workoutName: "Running",
+                    description: null,
+                    "date": null,
+                    "startTime": null,
+                    "favorite": null,
+                    "duration": null
                   }
                 """));
     }
@@ -96,10 +101,14 @@ class FitnessControllerTest {
                         .content("""
                 {
                     "id": "1",
+                    "workoutName": "Updated workout",
                     "description": "Updated description",
-                    "workoutName": "Updated workout"
+                    "date": null,
+                    "startTime": null,
+                    "favorite": false,
+                    "duration": null
                 }
-                """))
+"""))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("1"))
                 .andExpect(jsonPath("$.description").value("Updated description"))
