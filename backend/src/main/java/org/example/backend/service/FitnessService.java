@@ -33,8 +33,12 @@ public class FitnessService {
 
         Workout newWorkout=new Workout(
                 idService.generateId(),
+                workoutDto.workoutName(),
                 workoutDto.description(),
-                workoutDto.workoutName()
+                workoutDto.date(),
+                workoutDto.startTime(),
+                workoutDto.favorite(),
+                workoutDto.duration()
         );
         return repo.save(newWorkout);
     }
@@ -57,7 +61,11 @@ public class FitnessService {
                 .orElseThrow(() -> new NotFoundException("Workout not found: " + id));
             Workout updated = existing
                 .withDescription(workoutDetails.description())
-                .withWorkoutName(workoutDetails.workoutName());
+                .withWorkoutName(workoutDetails.workoutName())
+                .withDate(workoutDetails.date())
+                .withStartTime(workoutDetails.startTime())
+                .withFavorite(workoutDetails.favorite())
+                .withDuration(workoutDetails.duration());
 
         return repo.save(updated);
     }
