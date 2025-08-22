@@ -1,5 +1,6 @@
-export type workoutType={
-    id: "",
-    description: "",
-    workoutName: ""
-}
+export type workoutType = {
+    id: string;
+    description: string;
+    workoutName: string;
+    dateTime?: string;
+};

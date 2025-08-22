@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,80 +22,79 @@ class FitnessServiceTest {
 
     @Mock
     FitnessRepo fitnessRepo;
+
+    @Mock
+    IdService idService;
+
     @InjectMocks
     FitnessService fitnessService;
 
-    Workout dummy=new Workout("1","Description text","Running");
-    Workout dummy2=new Workout("2","Description text2","Lifting");
-    List<Workout> dummyWorkouts=List.of(dummy,dummy2);
+    // sample timestamps
+    private final LocalDateTime t1 = LocalDateTime.of(2025, 8, 19, 7, 13, 43);
+    private final LocalDateTime t2 = LocalDateTime.of(2025, 8, 20, 9, 0, 0);
+
+    // sample data
+    Workout dummy  = new Workout("1", "Description text",  "Running",  t1);
+    Workout dummy2 = new Workout("2", "Description text2", "Lifting",  t2);
+
     @Test
     void getAllWorkouts() {
-        FitnessRepo mockRepo=mock(FitnessRepo.class);
-        IdService mockIdService=mock(IdService.class);
-        FitnessService fitnessService=new FitnessService(mockRepo,mockIdService);
+        when(fitnessRepo.findAll()).thenReturn(List.of(dummy, dummy2));
 
-        when(mockRepo.findAll()).thenReturn(dummyWorkouts);
-        List<Workout> workouts= fitnessService.getAllWorkouts();
-        assertEquals(2,workouts.size());
-        assertEquals(dummy,workouts.getFirst());
-        assertEquals(dummyWorkouts,workouts);
+        List<Workout> workouts = fitnessService.getAllWorkouts();
+
+        assertEquals(2, workouts.size());
+        assertEquals(dummy, workouts.get(0));
+        assertEquals(List.of(dummy, dummy2), workouts);
+        verify(fitnessRepo).findAll();
     }
 
     @Test
-    void addWorkout() {
-        WorkoutDto dto=new WorkoutDto("Test","Running");
-        IdService idService=mock(IdService.class);
+    void addWorkout_insertsWithGeneratedId_andUsesNowWhenDateTimeNull() {
+        // given
+        WorkoutDto dto = new WorkoutDto("Test", "Running", null);
         when(idService.generateId()).thenReturn("1");
 
-        FitnessRepo repo=mock(FitnessRepo.class);
-        Workout expectedWorkout= new Workout(idService.generateId(), dto.description(),dto.workoutName());
-        when(repo.save(expectedWorkout)).thenReturn(expectedWorkout);
+        Workout saved = new Workout("1", "Test", "Running", t1);
+        when(fitnessRepo.save(any(Workout.class))).thenReturn(saved);
 
-        Workout actualWorkout= repo.save(expectedWorkout);
+        // when
+        Workout actual = fitnessService.addWorkout(dto);
 
-        assertEquals(actualWorkout,expectedWorkout);
-        verify(repo).save(expectedWorkout);
-
-
+        // then
+        assertEquals(saved, actual);
+        verify(idService).generateId();
+        verify(fitnessRepo).save(any(Workout.class));
     }
+
     @Test
     void addWorkout_whenNullOrBlank_ThenThrowException() {
-        // Given
-        WorkoutDto dto = new WorkoutDto("", "Running");
-
-        // When + Then
-        assertThrows(NullPointerException.class,
-                () -> fitnessService.addWorkout(dto));
+        WorkoutDto dto = new WorkoutDto("", "Running", null);
+        assertThrows(NullPointerException.class, () -> fitnessService.addWorkout(dto));
+        verifyNoInteractions(fitnessRepo);
     }
 
     @Test
     void getWorkoutById_whenValidId_ThenReturnWorkout() {
-        // Given
         String id = "1";
-        Workout expectedWorkout = new Workout(id, "Description text", "Running");
-        when(fitnessRepo.findById(id)).thenReturn(Optional.of(expectedWorkout));
+        Workout expected = dummy;
+        when(fitnessRepo.findById(id)).thenReturn(Optional.of(expected));
 
-        // When
-        Workout actualWorkout = fitnessService.getWorkoutById(id);
+        Workout actual = fitnessService.getWorkoutById(id);
 
-        // Then
-        assertEquals(expectedWorkout, actualWorkout);
+        assertEquals(expected, actual);
         verify(fitnessRepo).findById(id);
     }
 
     @Test
     void getWorkoutById_whenInvalidId_ThenThrowException() {
-        // Given
         String id = "1";
         when(fitnessRepo.findById(id)).thenReturn(Optional.empty());
 
-        // When + Then
-        assertThrows(NotFoundException.class,
-                () -> fitnessService.getWorkoutById(id));
-
-
+        assertThrows(NotFoundException.class, () -> fitnessService.getWorkoutById(id));
         verify(fitnessRepo).findById(id);
     }
+
     @Test
     void deleteWorkoutById_whenExists_deletes() {
         String id = "1";
@@ -110,45 +110,36 @@ class FitnessServiceTest {
         String id = "doesNotExist";
         when(fitnessRepo.existsById(id)).thenReturn(false);
 
-        assertThrows(NotFoundException.class,
-                () -> fitnessService.deleteWorkoutById(id));
+        assertThrows(NotFoundException.class, () -> fitnessService.deleteWorkoutById(id));
         verify(fitnessRepo, never()).deleteById(anyString());
     }
 
     @Test
     void updateWorkout_whenValidId_ThenReturnUpdatedWorkout() {
-        // Given
         String id = "1";
-        Workout existingWorkout = new Workout(id, "Old description", "Old workout");
-        Workout updateDetails = new Workout(id, "New description", "New workout");
-        Workout expectedUpdated = new Workout(id, "New description", "New workout");
+        Workout existing = dummy;
+        // send new details (may change name/description and optionally dateTime)
+        Workout details = new Workout(id, "New description", "New workout", t2);
+        Workout expected = new Workout(id, "New description", "New workout", t2);
 
-        when(fitnessRepo.findById(id)).thenReturn(Optional.of(existingWorkout));
-        when(fitnessRepo.save(any(Workout.class))).thenReturn(expectedUpdated);
+        when(fitnessRepo.findById(id)).thenReturn(Optional.of(existing));
+        when(fitnessRepo.save(any(Workout.class))).thenReturn(expected);
 
-        // When
-        Workout actualUpdated = fitnessService.updateWorkout(id, updateDetails);
+        Workout actual = fitnessService.updateWorkout(id, details);
 
-        // Then
-        assertEquals(expectedUpdated, actualUpdated);
+        assertEquals(expected, actual);
         verify(fitnessRepo).findById(id);
         verify(fitnessRepo).save(any(Workout.class));
     }
 
     @Test
     void updateWorkout_whenInvalidId_ThenThrowException() {
-        // Given
         String id = "nonExisting";
-        Workout updateDetails = new Workout(id, "New description", "New workout");
-
+        Workout details = new Workout(id, "New description", "New workout", t2);
         when(fitnessRepo.findById(id)).thenReturn(Optional.empty());
 
-        // When + Then
-        assertThrows(NotFoundException.class,
-                () -> fitnessService.updateWorkout(id, updateDetails));
-
+        assertThrows(NotFoundException.class, () -> fitnessService.updateWorkout(id, details));
         verify(fitnessRepo).findById(id);
         verify(fitnessRepo, never()).save(any(Workout.class));
     }
-
 }

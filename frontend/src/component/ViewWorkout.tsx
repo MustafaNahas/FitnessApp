@@ -1,130 +1,178 @@
-import {
-    useEffect,
-    useState
-} from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import type {workoutType} from "../type/workoutType.ts";
-import {useParams} from "react-router-dom";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faDumbbell, faPersonBiking, faPersonRunning, faPersonWalking, faTrash} from "@fortawesome/free-solid-svg-icons";
+import type { workoutType } from "../type/workoutType"; // no .ts in import
+import { useParams } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+    faDumbbell,
+    faPersonBiking,
+    faPersonRunning,
+    faPersonWalking,
+    faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function ViewWorkout() {
-    const {id} = useParams();
+    const { id } = useParams();
     const [workout, setWorkout] = useState<workoutType | null>(null);
     const [isEditing, setIsEditing] = useState(false);
-    const [description, setdescription] = useState("");
-    const [workoutName, setworkoutName] = useState("");
 
-    const [workouts, setWorkouts] = useState([{id: "", description: "", workoutName: ""}]);
+    // local form state
+    const [description, setDescription] = useState("");
+    const [workoutName, setWorkoutName] = useState("");
+    const [dateTime, setDateTime] = useState<string>("");
+
+    useEffect(() => {
+        if (!id) return;
+        axios
+            .get(`/api/workouts/${id}`)
+            .then((res) => {
+                const w: workoutType = res.data;
+                setWorkout(w);
+                setDescription(w.description);
+                setWorkoutName(w.workoutName);
+                if (w.dateTime) setDateTime(w.dateTime);
+            })
+            .catch((err) => console.error(err));
+    }, [id]);
 
     const handleUpdate = () => {
         if (!id) return;
 
-        const updatedWorkout = {
-            id: id,
-            description: description,
-            workoutName: workoutName
+        const updatedWorkout: workoutType = {
+            id,
+            description,
+            workoutName,
+            // datetime-local has no seconds; add :00 to keep ISO-like shape
+            dateTime: dateTime
+                ? dateTime.length === 16
+                    ? `${dateTime}:00`
+                    : dateTime
+                : new Date().toISOString(),
         };
 
-        axios.put(`/api/workouts/${id}`, updatedWorkout)
-            .then(res => {
+        axios
+            .put(`/api/workouts/${id}`, updatedWorkout)
+            .then((res) => {
                 setWorkout(res.data);
                 setIsEditing(false);
             })
-            .catch(err => console.error(err));
-    };
-    useEffect(() => {
-        if (id) {
-            axios.get(`/api/workouts/${id}`)
-                .then(res => {
-                    setWorkout(res.data);
-                    setdescription(res.data.description);
-                    console.log(res.data);
-                })
-                .catch(err => console.error(err));
-        }
-    },[id]);
-
-    if (!workout) {
-        return <p>I didn't find...</p>; // або спіннер
-    }
-
-
-    const getIcon = (type: string) => {
-        switch (type) {
-            case "Running": return faPersonRunning;
-            case "Walking": return faPersonWalking;
-            case "Cycling": return faPersonBiking;
-            case "Lifting": return faDumbbell;
-            default: return undefined;
-        }
+            .catch((err) => console.error(err));
     };
 
-    async function handleDelete(id: string) {
+    async function handleDelete(workoutId: string) {
         const confirmed = window.confirm("Möchten Sie dieses Workout wirklich löschen?");
         if (!confirmed) return;
 
-        // Optimistic UI
-        const prev = [...workouts];
-        setWorkouts(ws => ws.filter(w => w.id !== id));
-
         try {
-            await axios.delete(`/api/workouts/${id}`);
+            await axios.delete(`/api/workouts/${workoutId}`);
+            setWorkout(null); // cleared after delete (could redirect if desired)
         } catch (e) {
             console.error(e);
             alert("Fehler beim Löschen des Workouts");
-            setWorkouts(prev); // rollback bei Fehler
         }
     }
 
+    if (!workout) return <p>I didn't find...</p>;
+
+    const getIcon = (type: string) => {
+        switch (type) {
+            case "Running":
+                return faPersonRunning;
+            case "Walking":
+                return faPersonWalking;
+            case "Cycling":
+                return faPersonBiking;
+            case "Lifting":
+                return faDumbbell;
+            default:
+                return undefined;
+        }
+    };
+
     return (
-        <div key={workout.id} className="workout-card">
+        <div key={workout.id} className="workout-card workout-card--detail">
             {isEditing ? (
                 <>
-                    <h2>
-                        {getIcon(workout.workoutName) &&
-                            <FontAwesomeIcon icon={getIcon(workout.workoutName)!} />}
-                        {" "}          <select name ="type"
-                                               value={workoutName}
-                                               onChange={(e) => setworkoutName(e.target.value)}
-                    >
-                        <option value="Running">Running</option>
-                        <option value="Walking">Walking</option>
-                        <option value="Cycling">Cycling</option>
-                        <option value="Lifting">Lifting</option>
-                    </select>
+                    <h2 className="workout-card__title">
+                        {getIcon(workout.workoutName) && (
+                            <FontAwesomeIcon icon={getIcon(workout.workoutName)!} />
+                        )}
+                        <select
+                            name="type"
+                            value={workoutName}
+                            onChange={(e) => setWorkoutName(e.target.value)}
+                        >
+                            <option value="Running">Running</option>
+                            <option value="Walking">Walking</option>
+                            <option value="Cycling">Cycling</option>
+                            <option value="Lifting">Lifting</option>
+                        </select>
                     </h2>
-                    <strong>Description:</strong>  <input value={description} onChange={(e) => setdescription(e.target.value)} />
 
+                    <div className="form-grid">
+                        <label>
+                            <strong>Description</strong>
+                            <input
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                            />
+                        </label>
 
+                        <label>
+                            <strong>Date/Time</strong>
+                            <input
+                                type="datetime-local"
+                                value={dateTime ? dateTime.slice(0, 16) : ""}
+                                onChange={(e) => setDateTime(e.target.value)}
+                            />
+                        </label>
+                    </div>
 
-                    <button onClick={handleUpdate}>save</button>
-                    <button onClick={() => setIsEditing(false)}>cancel</button>
+                    <div className="actions">
+                        <button className="btn" onClick={handleUpdate}>
+                            Save
+                        </button>
+                        <button className="btn btn--ghost" onClick={() => setIsEditing(false)}>
+                            Cancel
+                        </button>
+                    </div>
                 </>
-                ) : (
+            ) : (
                 <>
-                    <h2>
-                        {getIcon(workout.workoutName) &&
-                            <FontAwesomeIcon icon={getIcon(workout.workoutName)!} />}
-                        {" "}{workout.workoutName}
+                    <h2 className="workout-card__title">
+                        {getIcon(workout.workoutName) && (
+                            <FontAwesomeIcon icon={getIcon(workout.workoutName)!} />
+                        )}
+                        {workout.workoutName}
                     </h2>
-                    <p><strong>Description:</strong> {description}</p>
 
-                    <button onClick={() => setIsEditing(true)}>update</button>
+                    <p>
+                        <strong>Description:</strong> {workout.description}
+                    </p>
 
+                    {workout.dateTime && (
+                        <p>
+                            <strong>Date:</strong>{" "}
+                            <time dateTime={workout.dateTime}>
+                                {new Date(workout.dateTime).toLocaleString()}
+                            </time>
+                        </p>
+                    )}
+
+                    <div className="actions">
+                        <button className="btn" onClick={() => setIsEditing(true)}>
+                            Update
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn--danger"
+                            onClick={() => handleDelete(workout.id)}
+                        >
+                            <FontAwesomeIcon icon={faTrash} /> Löschen
+                        </button>
+                    </div>
                 </>
-
             )}
-            <>
-                {/* Delete-Button */}
-                <button
-                    type="button"
-                    className="delete-btn"
-                    onClick={(e) => { e.stopPropagation(); handleDelete(workout.id); }}
-                >
-                    <FontAwesomeIcon icon={faTrash} /> Löschen
-                </button>
-            </>
         </div>
     );
 }
