@@ -10,6 +10,8 @@ import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureMockR
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -19,9 +21,10 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@SpringBootTest(properties = "app.url=http://localhost")
 @AutoConfigureMockMvc
 @AutoConfigureMockRestServiceServer
+
 class FitnessControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -39,6 +42,8 @@ class FitnessControllerTest {
     }
 
     @Test
+    @DirtiesContext
+    @WithMockUser
     void getAllWorkouts() throws Exception {
         // given
         repo.save(dummy);
@@ -53,6 +58,8 @@ class FitnessControllerTest {
     }
 
     @Test
+    @DirtiesContext
+    @WithMockUser
     void getWorkoutById() throws Exception {
         // given
         repo.save(dummy);
@@ -74,6 +81,8 @@ class FitnessControllerTest {
     }
 
     @Test
+    @DirtiesContext
+    @WithMockUser
     void deleteWorkout_existingId_returns204() throws Exception {
         // given
         repo.save(dummy);
@@ -84,6 +93,8 @@ class FitnessControllerTest {
     }
 
     @Test
+    @DirtiesContext
+    @WithMockUser
     void deleteWorkout_nonExistingId_returns404() throws Exception {
         // when + then
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/workouts/{id}", "doesNotExist"))
@@ -91,6 +102,8 @@ class FitnessControllerTest {
     }
 
     @Test
+    @DirtiesContext
+    @WithMockUser
     void updateWorkout_existingId_returnsUpdatedWorkout() throws Exception {
         // given
         repo.save(dummy);
