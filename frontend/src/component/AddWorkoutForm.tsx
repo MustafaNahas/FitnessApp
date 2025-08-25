@@ -5,20 +5,34 @@ function AddWorkoutForm() {
 
     const [workoutName, setWorkoutName] = useState<string>("Running");
     const [description, setDescription] = useState<string| null>("");
-    const [date, setDate] = useState<Date | null>(null);
-    const [startTime, setStartTime] = useState<string | null>(null);
+    const [date, setDate] = useState<string>(new Date(Date.now()).toISOString().split("T")[0]);
+    const [startTime, setStartTime] = useState<string>(new Date(Date.now()).toLocaleTimeString("de-DE").slice(0,5));
     const [favorite, setFavorite] = useState<boolean>(false);
     const [duration, setDuration] = useState<number | null>(null);
     const [success, setSuccess] = useState<boolean>(false);
 
+    function resetForm() {
+        setWorkoutName("Running");
+        setDescription("");
+        setDate(new Date(Date.now()).toISOString().split("T")[0])
+        setStartTime(new Date(Date.now()).toLocaleTimeString("de-DE").slice(0,5));
+        setFavorite(false);
+        setDuration(null);
+    }
     function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        if(workoutName !== "" && description !== "") {
+        if(date==="Invalid Date"){
+            setDate(new Date().toISOString().split("T")[0])
+        }
+        if(startTime==="Invalid Date"){
+            setStartTime(new Date(Date.now()).toLocaleTimeString("de-DE").slice(0,5))
+        }
+        if(workoutName !== "" ) {
             axios.post("/api/workouts",{
                 workoutName: workoutName,
                 description: description,
-                date: date ?? null,
-                startTime: startTime ?? null,
+                date: date,
+                startTime: startTime+":00",
                 favorite: favorite,
                 duration: duration ?? null
             }
@@ -31,8 +45,7 @@ function AddWorkoutForm() {
                 alert(err);
             }).finally(
                 () => {
-                    setWorkoutName("");
-                    setDescription("");
+                    resetForm();
                 }
             )
         }else{
@@ -40,14 +53,27 @@ function AddWorkoutForm() {
         }
     }
 
- // here
+    //to not pick dates in the future
+    const maxDatePick = new Date().toISOString().split("T")[0];
+    const handleBlurDate = () => {
+        if (!date) {
+            setDate(new Date().toISOString().split("T")[0]);
+        }
+    };
+
+    const handleBlurTime = () => {
+        if (!startTime) {
+            setStartTime(new Date(Date.now()).toLocaleTimeString("de-DE").slice(0,5));
+        }
+    };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className={"InputForm"}>
             <div>
                 <label htmlFor={"workoutName"}>Workout type:</label>
                 <select value={workoutName}
                         onChange={e=>setWorkoutName(e.target.value)}
+                        id={"workoutName"}
                         name={"workoutName"}
                         required>
                     <option value="Running">Running </option>
@@ -59,35 +85,37 @@ function AddWorkoutForm() {
             <div>
                 <label htmlFor={"description"}>Workout description:</label>
                 <input type={"text"} value={description?.toString()} placeholder={"Workout description"}
-                       name={"description"} onChange={e => setDescription(e.target.value)}/>
+                       id={"description"} name={"description"} onChange={e => setDescription(e.target.value)}/>
             </div>
             <div>
+                <span className={`date-display ${!date ? "placeholder" : ""}`}>
+
+                </span>
                 <label htmlFor={"date"}>Date:</label>
-                <input type={"date"}  name={"date"}
-                       onChange={e => setDate(e.target.value ? new Date(e.target.value):null)}/>
+                <input type={"date"}  id={"date"} name={"date"}  max={maxDatePick} onBlur={handleBlurDate} placeholder={maxDatePick}
+                       onChange={e => setDate(new Date(e.target.value).toISOString().split("T")[0])}/>
             </div>
             <div>
                 <label htmlFor={"Time"}>Time:</label>
-                <input type={"time"} value={startTime?.toString()} placeholder={Date.now().toString()}
-                       min="00:00" max="23:59" step={60}  name={"date"}
+                <input type={"time"} value={startTime?.toString()} defaultValue={new Date().toLocaleTimeString("de-DE").slice(0,5)} placeholder={new Date().toLocaleTimeString("de-DE").slice(0,5)}
+                       min="00:00" max="23:59" step={60}  id={"Time"} name={"Time"}  onBlur={handleBlurTime}
                        onChange={(e) => setStartTime(e.target.value)}/>
             </div>
             <div>
                 <label htmlFor={"favorite"}>Favorite:</label>
-                <input type={"checkbox"} value={favorite?.toString()}  name={"favorite"}
+                <input type={"checkbox"} value={favorite?.toString()}  id={"favorite"} name={"favorite"}
                        onChange={e=>setFavorite(e.target.checked)}/>
             </div>
             <div>
                 <label htmlFor={"Duration"}>Duration:</label>
-                <input type={"number"} value={duration ?? ""} min={1} placeholder={"20"} name={"date"}
+                <input type={"number"} value={duration ?? ""} min={1} placeholder={"20"} id={"Duration"} name={"Duration"}
                        onChange={e=> setDuration(Number(e.target.value))}/>
             </div>
 
 
             <button type={"submit"}>Add Workout</button>
             <button type={"reset"} onClick={() => {
-                setWorkoutName("");
-                setDescription("");
+                resetForm();
                 setSuccess(false);
                 console.log("Form reset");
             } }> Reset</button>
