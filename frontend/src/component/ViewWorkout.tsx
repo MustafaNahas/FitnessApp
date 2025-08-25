@@ -11,9 +11,13 @@ import {faDumbbell, faPersonBiking, faPersonRunning, faPersonWalking, faTrash} f
 export default function ViewWorkout() {
     const {id} = useParams();
     const [workout, setWorkout] = useState<workoutType | null>(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [description, setdescription] = useState("");
-    const [workoutName, setworkoutName] = useState("");
+    const [isEditing, setIsEditing] = useState<boolean>(false);
+    const [workoutName, setWorkoutName] = useState<string>("Running");
+    const [description, setDescription] = useState<string| null>("");
+    const [date, setDate] = useState<string>(new Date(Date.now()).toISOString().split("T")[0]);
+    const [startTime, setStartTime] = useState<string>(new Date(Date.now()).toLocaleTimeString("de-DE").slice(0,5));
+    const [favorite, setFavorite] = useState<boolean>(false);
+    const [duration, setDuration] = useState<number | null>(null);
 
     const [workouts, setWorkouts] = useState([{id: "", description: "", workoutName: ""}]);
 
@@ -38,7 +42,12 @@ export default function ViewWorkout() {
             axios.get(`/api/workouts/${id}`)
                 .then(res => {
                     setWorkout(res.data);
-                    setdescription(res.data.description);
+                    setDescription(res.data.description);
+                    setDate(res.data.date);
+                    setDuration(res.data.duration);
+                    setFavorite(res.data.favorite);
+                    setWorkoutName(res.data.workoutName);
+                    setStartTime(res.data.startTime);
                     console.log(res.data);
                 })
                 .catch(err => console.error(err));
@@ -94,8 +103,25 @@ export default function ViewWorkout() {
                         <option value="Lifting">Lifting</option>
                     </select>
                     </h2>
-                    <strong>Description:</strong>  <input value={description} onChange={(e) => setdescription(e.target.value)} />
+                    <strong>Description:</strong>
+                    <input value={description ? description : ""} onChange={ e =>setDescription(e.target.value)} />
 
+                    <label htmlFor={"date"}>Date:</label>
+                    <input type={"date"}  id={"date"} name={"date"}  max={maxDatePick}  placeholder={maxDatePick} value={date}
+                           onChange={e => setDate(new Date(e.target.value).toISOString().split("T")[0])}/>
+
+                    <label htmlFor={"Time"}>Time:</label>
+                    <input type={"time"} value={startTime}
+                           min="00:00" max="23:59" step={60}  id={"Time"} name={"Time"}
+                           onChange={(e) => setStartTime(e.target.value)}/>
+
+                    <label htmlFor={"favorite"}>Favorite:</label>
+                    <input type={"checkbox"} checked={favorite}  id={"favorite"} name={"favorite"}
+                           onChange={e=>setFavorite(e.target.checked)}/>
+
+                    <label htmlFor={"Duration"}>Duration:</label>
+                    <input type={"number"} value={duration ?? ""} min={1} placeholder={"20"} id={"Duration"} name={"Duration"}
+                           onChange={e=> setDuration(Number(e.target.value))}/>
 
 
                     <button onClick={handleUpdate}>save</button>
