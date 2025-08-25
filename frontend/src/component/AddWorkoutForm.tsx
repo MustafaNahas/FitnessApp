@@ -110,7 +110,7 @@ function AddWorkoutForm() {
                        onChange={e=> setDuration(Number(e.target.value))}/>
             </div>
 
-            <div className={"submitButtons"}>
+            <div className={"buttonAlignment"}>
                 <button type={"submit"}>Add Workout</button>
                 <button type={"reset"} onClick={() => {
                     resetForm();

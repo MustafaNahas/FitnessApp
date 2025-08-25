@@ -19,15 +19,19 @@ export default function ViewWorkout() {
     const [favorite, setFavorite] = useState<boolean>(false);
     const [duration, setDuration] = useState<number | null>(null);
 
-    const [workouts, setWorkouts] = useState([{id: "", description: "", workoutName: ""}]);
+    const [workouts, setWorkouts] = useState([{id: "", description: "", workoutName:"Running",
+        date: new Date(Date.now()).toISOString().split("T") [0],startTime:new Date(Date. now()).toLocaleTimeString("de-DE").slice(0,5),favorite:false,duration:null}]);
 
     const handleUpdate = () => {
         if (!id) return;
 
-        const updatedWorkout = {
-            id: id,
+        const updatedWorkout ={
+            workoutName: workoutName,
             description: description,
-            workoutName: workoutName
+            date: date,
+            startTime: startTime+":00",
+            favorite: favorite,
+            duration: duration ?? null
         };
 
         axios.put(`/api/workouts/${id}`, updatedWorkout)
@@ -86,6 +90,7 @@ export default function ViewWorkout() {
         }
     }
 
+    const maxDatePick = new Date().toISOString().split("T")[0];
     return (
         <div key={workout.id} className="workout-card">
             {isEditing ? (
@@ -95,7 +100,7 @@ export default function ViewWorkout() {
                             <FontAwesomeIcon icon={getIcon(workout.workoutName)!} />}
                         {" "}          <select name ="type"
                                                value={workoutName}
-                                               onChange={(e) => setworkoutName(e.target.value)}
+                                               onChange={(e) => setWorkoutName(e.target.value)}
                     >
                         <option value="Running">Running</option>
                         <option value="Walking">Walking</option>
@@ -126,31 +131,60 @@ export default function ViewWorkout() {
 
                     <button onClick={handleUpdate}>save</button>
                     <button onClick={() => setIsEditing(false)}>cancel</button>
+
+                    <>
+                        {/* Delete-Button */}
+                        <button
+                            type="button"
+                            className="delete-btn"
+                            onClick={(e) => { e.stopPropagation(); handleDelete(workout.id); }}
+                        >
+                            <FontAwesomeIcon icon={faTrash} /> Löschen
+                        </button>
+                    </>
                 </>
                 ) : (
-                <>
+                <div className={"ViewWorkoutDetails"} >
                     <h2>
                         {getIcon(workout.workoutName) &&
                             <FontAwesomeIcon icon={getIcon(workout.workoutName)!} />}
                         {" "}{workout.workoutName}
                     </h2>
-                    <p><strong>Description:</strong> {description}</p>
+                    <br/>
 
-                    <button onClick={() => setIsEditing(true)}>update</button>
+                    <strong>Description:</strong>
+                    <p className={"descriptionView"}>{description}</p>
 
-                </>
+                    <strong>Date:</strong>
+                    <p>{date}</p>
+
+                    <strong>Time:</strong>
+                    <p> {startTime.slice(0,5)}</p>
+
+                    <strong>Favorite:</strong>
+                    <p><input type={"checkbox"} checked={favorite}/>{favorite}</p>
+
+                    <strong>Duration:</strong>
+                    <p>{duration}</p>
+                    <div className={"buttonAlignment"}>
+                        <button onClick={() => setIsEditing(true)}>update</button>
+
+                        <>
+                            {/* Delete-Button */}
+                            <button
+                                type="button"
+                                className="delete-btn"
+                                onClick={(e) => { e.stopPropagation(); handleDelete(workout.id); }}
+                            >
+                                <FontAwesomeIcon icon={faTrash} /> Löschen
+                            </button>
+                        </>
+                    </div>
+
+                </div>
 
             )}
-            <>
-                {/* Delete-Button */}
-                <button
-                    type="button"
-                    className="delete-btn"
-                    onClick={(e) => { e.stopPropagation(); handleDelete(workout.id); }}
-                >
-                    <FontAwesomeIcon icon={faTrash} /> Löschen
-                </button>
-            </>
+
         </div>
     );
 }
