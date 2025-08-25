@@ -71,6 +71,7 @@ function AddWorkoutForm() {
         <form onSubmit={handleSubmit} className={"InputForm"}>
             <div>
                 <label htmlFor={"workoutName"}>Workout type:</label>
+                <br/>
                 <select value={workoutName}
                         onChange={e=>setWorkoutName(e.target.value)}
                         id={"workoutName"}
@@ -88,9 +89,6 @@ function AddWorkoutForm() {
                        id={"description"} name={"description"} onChange={e => setDescription(e.target.value)}/>
             </div>
             <div>
-                <span className={`date-display ${!date ? "placeholder" : ""}`}>
-
-                </span>
                 <label htmlFor={"date"}>Date:</label>
                 <input type={"date"}  id={"date"} name={"date"}  max={maxDatePick} onBlur={handleBlurDate} placeholder={maxDatePick}
                        onChange={e => setDate(new Date(e.target.value).toISOString().split("T")[0])}/>
@@ -112,14 +110,15 @@ function AddWorkoutForm() {
                        onChange={e=> setDuration(Number(e.target.value))}/>
             </div>
 
-
-            <button type={"submit"}>Add Workout</button>
-            <button type={"reset"} onClick={() => {
-                resetForm();
-                setSuccess(false);
-                console.log("Form reset");
-            } }> Reset</button>
-            {(success)&& <p>Workout added successfully!</p>}
+            <div className={"submitButtons"}>
+                <button type={"submit"}>Add Workout</button>
+                <button type={"reset"} onClick={() => {
+                    resetForm();
+                    setSuccess(false);
+                    console.log("Form reset");
+                } }> Reset</button>
+                {(success)&& <p>Workout added successfully!</p>}
+            </div>
         </form>
     );
 }
