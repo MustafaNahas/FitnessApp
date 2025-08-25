@@ -57,7 +57,7 @@ button:hover{
     transform: scale(1.1);
 }
 
-.InputForm{
+.InputForm , .ViewWorkoutDetails{
     display: flex;
     border: 0.2rem solid;
     border-radius: 1rem ;
@@ -68,16 +68,18 @@ button:hover{
     margin: 2rem auto 4rem;
 
 
-    .submitButtons{
+    .buttonAlignment{
         flex-direction: column;
     }
-    label {
+
+
+    label , strong {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         font-size: 1.5rem;
         font-weight: 800;
         margin: 2rem 0 0 0.5rem;
     }
-    input {
+    input , p{
         width: 67%;
         padding: 1rem 1rem;
         margin: 1rem 0;
@@ -85,6 +87,16 @@ button:hover{
         border: 0.2rem solid;
         border-radius: 4px;
     }
+
+    .descriptionView{
+        display: inline;
+        align-items: start;
+        text-align: start;
+        justify-content: start;
+        width: 100%;
+
+    }
+
     input:invalid,
     select:invalid {
         border: 2px solid red;
@@ -115,5 +127,22 @@ button:hover{
         top: 0;
         bottom: auto;
         padding: 1rem 0;
+    }
+    .InputForm , .ViewWorkoutDetails{
+        flex-direction: row;
+        h2 {
+            width: 100vw;
+            margin:auto;
+            text-align: center;
+            align-self: center;
+        }
+        .descriptionView{
+            display: inline;
+            align-items: start;
+            text-align: start;
+            justify-content: start;
+            width: 100%;
+
+        }
     }
 }
