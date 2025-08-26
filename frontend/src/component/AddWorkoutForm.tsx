@@ -1,7 +1,7 @@
 import {type FormEvent, useState} from "react";
 import axios from "axios";
 
-function AddWorkoutForm() {
+function AddWorkoutForm({ userName }: Readonly<{ userName: string }>){
 
     const [workoutName, setWorkoutName] = useState<string>("Running");
     const [description, setDescription] = useState<string| null>("");
@@ -27,9 +27,11 @@ function AddWorkoutForm() {
         if(startTime==="Invalid Date"){
             setStartTime(new Date(Date.now()).toLocaleTimeString("de-DE").slice(0,5))
         }
+
         if(workoutName !== "" ) {
             axios.post("/api/workouts",{
                 workoutName: workoutName,
+                userName:userName,
                 description: description,
                 date: date,
                 startTime: startTime+":00",

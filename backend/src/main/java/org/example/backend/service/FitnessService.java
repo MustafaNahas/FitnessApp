@@ -33,7 +33,7 @@ public class FitnessService {
 
         Workout newWorkout=new Workout(
                 idService.generateId(),
-                username,
+                workoutDto.userName(),
                 workoutDto.workoutName(),
                 workoutDto.description(),
                 workoutDto.date(),

@@ -28,7 +28,7 @@ function App() {
 
     useEffect(() => {
         loadUser()
-    }, [])
+    }, [user])
 
     if (loading) {
         return <div>Loading...</div>
@@ -60,7 +60,7 @@ function App() {
 
               <Route path="/workouts/add" element={
                   <ProtectedRoute user={user}>
-                      <AddWorkoutForm />
+                      {user && <AddWorkoutForm userName={user} />}
                   </ProtectedRoute>
               } />
           </Routes>
