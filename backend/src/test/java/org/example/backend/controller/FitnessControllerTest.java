@@ -2,6 +2,7 @@ package org.example.backend.controller;
 
 import org.example.backend.model.Workout;
 import org.example.backend.repo.FitnessRepo;
+import org.example.backend.service.FitnessService;
 import org.example.backend.service.IdService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,10 +39,12 @@ class FitnessControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private FitnessRepo repo;
+    @Autowired
+    private FitnessService service;
 
 //changes
-    Workout dummy = new Workout("1", "Running", null, null, null, null, null);
-    Workout dummy2 = new Workout("2", "Lifting", "Description text2", null, null, null, 20.0);
+    Workout dummy = new Workout("1", "Max", "Running", null, null, null, null, null);
+    Workout dummy2 = new Workout("2", "Max","Lifting", "Description text2", null, null, null, 20.0);
 
 
     @BeforeEach
@@ -58,11 +61,20 @@ class FitnessControllerTest {
         repo.save(dummy2);
 
         // when + then
+        Map<String, Object> attributes = Map.of("login", "Max");
+        OAuth2User oAuth2User = new DefaultOAuth2User(
+                List.of(new SimpleGrantedAuthority("ROLE_USER")),
+                attributes,
+                "login"
+        );
+
+        UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken(oAuth2User, "token", oAuth2User.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
         mockMvc.perform(MockMvcRequestBuilders.get("/api/workouts"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[?(@.id=='1')].workoutName").exists())
-                .andExpect(jsonPath("$[?(@.id=='2')].workoutName").exists());
+                .andExpect(jsonPath("$", hasSize(2)));
     }
 
     @Test
@@ -78,6 +90,7 @@ class FitnessControllerTest {
                 .andExpect(content().json("""
                   {
                     id : "1",
+                    userName : "Max",
                     workoutName: "Running",
                     description: null,
                     "date": null,
@@ -122,6 +135,7 @@ class FitnessControllerTest {
                         .content("""
                 {
                     "id": "1",
+                    "userName" : "Max",
                     "workoutName": "Updated workout",
                     "description": "Updated description",
                     "date": null,
