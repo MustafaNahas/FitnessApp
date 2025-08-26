@@ -36,6 +36,7 @@ function App() {
 
   return (
       <>
+          <h2>Welcome {user}</h2>
           <Navbar user={user} onUserChange={setUser} />
 
           <Routes>
