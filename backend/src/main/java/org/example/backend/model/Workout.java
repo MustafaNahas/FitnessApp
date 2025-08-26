@@ -5,6 +5,7 @@ import lombok.With;
 //test
 @With
 public record Workout(String id,
+                      String userName,
                       String workoutName,
                       String description,
                       String date,

@@ -3,7 +3,8 @@ import lombok.With;
 
 //test
 @With
-public record WorkoutDto(String workoutName,
+public record WorkoutDto(String userName,
+                         String workoutName,
                          String description,
                          String date,
                          String startTime,

@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static org.example.backend.controller.AuthController.username;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -24,8 +25,8 @@ class FitnessServiceTest {
     @InjectMocks
     FitnessService fitnessService;
 
-    Workout dummy = new Workout("1", "Running", null, null, null, false, null);
-    Workout dummy2 = new Workout("2", "Lifting", null, null, null,false, 20.0);
+    Workout dummy = new Workout("1", "Max", "Running", null, null, null, false, null);
+    Workout dummy2 = new Workout("2", "Max","Lifting", null, null, null,false, 20.0);
     List<Workout> dummyWorkouts=List.of(dummy,dummy2);
     @Test
     void getAllWorkouts() {
@@ -33,8 +34,8 @@ class FitnessServiceTest {
         IdService mockIdService=mock(IdService.class);
         FitnessService fitnessService=new FitnessService(mockRepo,mockIdService);
 
-        when(mockRepo.findAll()).thenReturn(dummyWorkouts);
-        List<Workout> workouts= fitnessService.getAllWorkouts();
+        when(mockRepo.findAllByUserName("Max")).thenReturn(dummyWorkouts);
+        List<Workout> workouts= fitnessService.getAllWorkouts("Max");
         assertEquals(2,workouts.size());
         assertEquals(dummy,workouts.getFirst());
         assertEquals(dummyWorkouts,workouts);

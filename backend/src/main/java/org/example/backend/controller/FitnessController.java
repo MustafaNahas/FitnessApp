@@ -14,19 +14,23 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
+
 @RestController
 @RequestMapping("/api")
 
 public class FitnessController {
     private final FitnessService service;
 
-    public FitnessController(FitnessService service) {
+    public FitnessController(FitnessService service, AuthController authController) {
+
         this.service = service;
     }
 
     @GetMapping("/workouts")
-    public List<Workout> getAllWorkouts(){
-        return service.getAllWorkouts();
+    public List<Workout> getAllWorkouts(@AuthenticationPrincipal OAuth2User user){
+        String username = user.getAttribute("login");
+        return service.getAllWorkouts(username);
     }
 
     @PostMapping("/workouts")

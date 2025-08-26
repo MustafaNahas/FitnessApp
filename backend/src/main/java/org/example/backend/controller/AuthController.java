@@ -11,9 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-
+public static String username;
     @GetMapping("/me")
     public String getMe(@AuthenticationPrincipal OAuth2User user) {
-        return user.getAttributes().get("login").toString();
+        username=user.getAttributes().get("login").toString();
+        return username;
     }
 }
