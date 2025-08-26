@@ -83,11 +83,13 @@ function AddWorkoutForm() {
                     <option value="Lifting">Lifting </option>
                 </select>
             </div>
+            <div className={"break-row"}></div>
             <div>
                 <label htmlFor={"description"}>Workout description:</label>
                 <input type={"text"} value={description?.toString()} placeholder={"Workout description"}
                        id={"description"} name={"description"} onChange={e => setDescription(e.target.value)}/>
             </div>
+            <div className={"break-row"}></div>
             <div>
                 <label htmlFor={"date"}>Date:</label>
                 <input type={"date"}  id={"date"} name={"date"}  max={maxDatePick} onBlur={handleBlurDate} placeholder={maxDatePick}
@@ -110,6 +112,7 @@ function AddWorkoutForm() {
                        onChange={e=> setDuration(Number(e.target.value))}/>
             </div>
 
+            <div className={"break-row"}></div>
             <div className={"buttonAlignment"}>
                 <button type={"submit"}>Add Workout</button>
                 <button type={"reset"} onClick={() => {
@@ -117,8 +120,10 @@ function AddWorkoutForm() {
                     setSuccess(false);
                     console.log("Form reset");
                 } }> Reset</button>
-                {(success)&& <p>Workout added successfully!</p>}
             </div>
+            <div className={"break-row"}></div>
+            {(success)&& <p>Workout added successfully!</p>}
+
         </form>
     );
 }

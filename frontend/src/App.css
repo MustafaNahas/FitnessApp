@@ -94,7 +94,6 @@ button:hover{
         text-align: start;
         justify-content: start;
         width: 100%;
-
     }
 
     input:invalid,
@@ -116,6 +115,15 @@ button:hover{
 @media (min-width: 650px){
     /*PC and tablet view*/
     /*CSS overwrite*/
+    .break-row {
+        flex-basis: 100%;
+        height: 0;
+    }
+    .break-column {
+        flex-basis: 100%;
+        width: 0;
+    }
+
     .ViewWorkouts{
         flex-direction: row;
     }
@@ -130,19 +138,14 @@ button:hover{
     }
     .InputForm , .ViewWorkoutDetails{
         flex-direction: row;
-        h2 {
-            width: 100vw;
-            margin:auto;
-            text-align: center;
-            align-self: center;
-        }
+        flex-wrap: wrap;
+
         .descriptionView{
             display: inline;
             align-items: start;
             text-align: start;
             justify-content: start;
             width: 100%;
-
         }
     }
 }
