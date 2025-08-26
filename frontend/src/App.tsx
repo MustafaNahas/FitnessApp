@@ -7,6 +7,7 @@ import Navbar from "./component/Navbar.tsx";
 import axios from "axios";
 import {useEffect, useState} from "react";
 import ProtectedRoute from "./component/ProtectedRoute.tsx";
+import UpdateWorkoutForm from "./component/UpdateWorkoutForm.tsx";
 
 
 function App() {
@@ -62,6 +63,12 @@ function App() {
                       <AddWorkoutForm />
                   </ProtectedRoute>
               } />
+              <Route path="/workouts/:id/edit" element={
+                  <ProtectedRoute user={user}>
+                      <UpdateWorkoutForm />
+                  </ProtectedRoute>
+              } />
+
           </Routes>
       </>
   )
