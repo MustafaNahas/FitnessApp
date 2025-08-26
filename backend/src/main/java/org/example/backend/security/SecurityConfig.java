@@ -20,6 +20,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(a -> a
                         .requestMatchers("/api/auth/me").authenticated()
                         .requestMatchers("/api/secured").authenticated()
+                        .requestMatchers("/api/secured/**").hasAuthority("ADMIN")
                         .anyRequest().permitAll()
 
                 ).logout(l -> l.logoutSuccessUrl(appUrl))
