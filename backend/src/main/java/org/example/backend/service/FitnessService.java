@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static org.example.backend.controller.AuthController.username;
+
 @Service
 public class FitnessService {
     // private final Mongo
@@ -19,11 +21,9 @@ public class FitnessService {
         this.repo = repo;
     }
 
-//     Workout dummy=new Workout("1","Description text","Running");
-//     Workout dummy2=new Workout("2","Description text2","Lifting");
-//     List<Workout> workouts=List.of(dummy,dummy2);
-    public List<Workout> getAllWorkouts(){
-        return repo.findAll();
+
+    public List<Workout> getAllWorkouts(String username){
+        return repo.findAllByUserName(username);
     }
 
     public Workout addWorkout(WorkoutDto workoutDto) {
@@ -33,6 +33,7 @@ public class FitnessService {
 
         Workout newWorkout=new Workout(
                 idService.generateId(),
+                username,
                 workoutDto.workoutName(),
                 workoutDto.description(),
                 workoutDto.date(),

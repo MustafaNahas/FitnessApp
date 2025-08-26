@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static org.example.backend.controller.AuthController.username;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -24,17 +25,17 @@ class FitnessServiceTest {
     @InjectMocks
     FitnessService fitnessService;
 
-    Workout dummy = new Workout("1", "Running", null, null, null, false, null);
-    Workout dummy2 = new Workout("2", "Lifting", null, null, null,false, 20.0);
+    Workout dummy = new Workout("1", "Max", "Running", null, null, null, false, null);
+    Workout dummy2 = new Workout("2", "Max","Lifting", null, null, null,false, 20.0);
     List<Workout> dummyWorkouts=List.of(dummy,dummy2);
     @Test
     void getAllWorkouts() {
         FitnessRepo mockRepo=mock(FitnessRepo.class);
         IdService mockIdService=mock(IdService.class);
-        FitnessService fitnessService=new FitnessService(mockRepo,mockIdService);
+        FitnessService fitnessService = new FitnessService(mockRepo,mockIdService);
 
-        when(mockRepo.findAll()).thenReturn(dummyWorkouts);
-        List<Workout> workouts= fitnessService.getAllWorkouts();
+        when(mockRepo.findAllByUserName("Max")).thenReturn(dummyWorkouts);
+        List<Workout> workouts= fitnessService.getAllWorkouts("Max");
         assertEquals(2,workouts.size());
         assertEquals(dummy,workouts.getFirst());
         assertEquals(dummyWorkouts,workouts);
@@ -42,12 +43,12 @@ class FitnessServiceTest {
 
     @Test
     void addWorkout() {
-        WorkoutDto dto=new WorkoutDto("Running", null, null,null,false, null);
+        WorkoutDto dto=new WorkoutDto("Max", "Running", null, null,null,false, null);
         IdService idService=mock(IdService.class);
         when(idService.generateId()).thenReturn("1");
 
         FitnessRepo repo=mock(FitnessRepo.class);
-        Workout expectedWorkout= new Workout(idService.generateId(), dto.workoutName(),dto.description(), dto.date(), dto.startTime(), dto.favorite(), dto.duration());
+        Workout expectedWorkout= new Workout(idService.generateId(), dto.userName(), dto.workoutName(),dto.description(), dto.date(), dto.startTime(), dto.favorite(), dto.duration());
         when(repo.save(expectedWorkout)).thenReturn(expectedWorkout);
 
         Workout actualWorkout= repo.save(expectedWorkout);
@@ -59,7 +60,8 @@ class FitnessServiceTest {
     }
     @Test
     void addWorkout_whenNullOrBlank_ThenThrowException() {
-        WorkoutDto dto = new WorkoutDto("Running",
+        WorkoutDto dto = new WorkoutDto("Max",
+                "Running",
                 null,
                 null,
                 null,
@@ -75,7 +77,7 @@ class FitnessServiceTest {
     void getWorkoutById_whenValidId_ThenReturnWorkout() {
         // Given
         String id = "1";
-        Workout expectedWorkout = new Workout(id,
+        Workout expectedWorkout = new Workout(id, "Max",
                 "Description text",
                 null,
                 null,
@@ -129,17 +131,17 @@ class FitnessServiceTest {
     void updateWorkout_whenValidId_ThenReturnUpdatedWorkout() {
         // Given
         String id = "1";
-        Workout existingWorkout = new Workout(id, "Running", null,
+        Workout existingWorkout = new Workout(id, "Max", "Running", null,
                 null,
                 null,
                 false,
                 null);
-        Workout updateDetails = new Workout(id, "Lifting", null,
+        Workout updateDetails = new Workout(id, "Max", "Lifting", null,
                 null,
                 null,
                 false,
                 null);
-        Workout expectedUpdated = new Workout(id, "Lifting", null,
+        Workout expectedUpdated = new Workout(id, "Max", "Lifting", null,
                 null,
                 null,
                 false,
@@ -161,7 +163,7 @@ class FitnessServiceTest {
     void updateWorkout_whenInvalidId_ThenThrowException() {
         // Given
         String id = "nonExisting";
-        Workout updateDetails = new Workout(id, "Running", null,
+        Workout updateDetails = new Workout(id, "Max", "Running", null,
                 null,
                 null,
                 false,
