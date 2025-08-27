@@ -18,7 +18,7 @@ export default function HeartCheckbox({ checked = false, onChange,disableOnClick
             setIsChecked(newValue);
             if (onChange) onChange(newValue);
         }
-    };
+    }
 
     return (
         <div
