@@ -29,7 +29,7 @@ export default function Navbar({ user, onUserChange }: Readonly<NavbarProps>) {
                 {user && (
                     <>
                         <button onClick={()=>(nav("/workouts"))}>Home <FontAwesomeIcon icon={faHouse} /></button>
-                        <button onClick={()=>(nav("/workouts/add"))}>Add a workout <FontAwesomeIcon icon={faPlus} /></button>
+                        <button onClick={()=>(nav("/workouts/add"))}>Add Workout <FontAwesomeIcon icon={faPlus} /></button>
 
                     </>
                 )}
