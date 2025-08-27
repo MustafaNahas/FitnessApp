@@ -77,7 +77,7 @@ export default function ViewWorkouts() {
                     )}
 
                     <p>
-                        <strong>Beschreibung:</strong> {workout.description}
+                        <strong>Description:</strong> {workout.description}
                     </p>
                 </button>
             ))}

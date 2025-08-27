@@ -1,7 +1,14 @@
 import {type FormEvent, useState} from "react";
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
+import HeartCheckbox from "./FavoriteCheckbox.tsx";
+import {faArrowRotateLeft, faPlus} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 function AddWorkoutForm({ userName }: Readonly<{ userName: string }>){
+
+    const nav = useNavigate();
+
 
     const [workoutName, setWorkoutName] = useState<string>("Running");
     const [description, setDescription] = useState<string| null>("");
@@ -24,9 +31,10 @@ function AddWorkoutForm({ userName }: Readonly<{ userName: string }>){
         if(date==="Invalid Date"){
             setDate(new Date().toISOString().split("T")[0])
         }
-        if(startTime==="Invalid Date"){
+        if(startTime==="Invalid Date"|| startTime===""||startTime===null){
             setStartTime(new Date(Date.now()).toLocaleTimeString("de-DE").slice(0,5))
         }
+
 
         if(workoutName !== "" ) {
             axios.post("/api/workouts",{
@@ -34,13 +42,17 @@ function AddWorkoutForm({ userName }: Readonly<{ userName: string }>){
                 userName:userName,
                 description: description,
                 date: date,
-                startTime: startTime+":00",
+                startTime:  ()=>{
+                    if(startTime.length<6)
+                    {return startTime+":00"}
+                    else{return startTime}
+                },
                 favorite: favorite,
                 duration: duration ?? null
             }
             ).then(res=>{
                 console.log(res);
-                setSuccess(true)
+                setSuccess(true);
             }).catch(err=> {
                 console.error(err);
                 setSuccess(false)
@@ -55,6 +67,11 @@ function AddWorkoutForm({ userName }: Readonly<{ userName: string }>){
         }
     }
 
+    if(success){
+        setTimeout(() => {
+            nav("/workouts");
+        }, 3000);
+    }
     //to not pick dates in the future
     const maxDatePick = new Date().toISOString().split("T")[0];
     const handleBlurDate = () => {
@@ -68,6 +85,7 @@ function AddWorkoutForm({ userName }: Readonly<{ userName: string }>){
             setStartTime(new Date(Date.now()).toLocaleTimeString("de-DE").slice(0,5));
         }
     };
+
 
     return (
         <form onSubmit={handleSubmit} className={"InputForm"}>
@@ -104,24 +122,32 @@ function AddWorkoutForm({ userName }: Readonly<{ userName: string }>){
                        onChange={(e) => setStartTime(e.target.value)}/>
             </div>
             <div>
-                <label htmlFor={"favorite"}>Favorite:</label>
-                <input type={"checkbox"} value={favorite?.toString()}  id={"favorite"} name={"favorite"}
-                       onChange={e=>setFavorite(e.target.checked)}/>
-            </div>
-            <div>
                 <label htmlFor={"Duration"}>Duration:</label>
-                <input type={"number"} value={duration ?? ""} min={1} placeholder={"20"} id={"Duration"} name={"Duration"}
+                <div className={"break-column"}></div>
+                <input className={"durationInput"} type={"number"} value={duration ?? ""} min={1} placeholder={"20"} id={"Duration"} name={"Duration"}
                        onChange={e=> setDuration(Number(e.target.value))}/>
             </div>
-
+            <div>
+                <label htmlFor={"favorite"}>Favorite:</label>
+                <div className={"break-row"}></div>
+                <div>
+                    <HeartCheckbox
+                        checked={favorite}
+                        disableOnClick={false}
+                        onChange={(val:boolean) =>{
+                            setFavorite(val);
+                        }}
+                    />
+                </div>
+            </div>
             <div className={"break-row"}></div>
             <div className={"buttonAlignment"}>
-                <button type={"submit"}>Add Workout</button>
+                <button type={"submit"}>Add Workout <FontAwesomeIcon icon={faPlus} /> </button>
                 <button type={"reset"} onClick={() => {
                     resetForm();
                     setSuccess(false);
                     console.log("Form reset");
-                } }> Reset</button>
+                } }> Reset <FontAwesomeIcon icon={faArrowRotateLeft} /></button>
             </div>
             <div className={"break-row"}></div>
             {(success)&& <p>Workout added successfully!</p>}

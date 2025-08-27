@@ -36,7 +36,13 @@ function App() {
 
   return (
       <>
-          <h2>Welcome {user}</h2>
+          {/*<h2>Welcome {user}</h2>*/}
+          {!user &&
+              <div>
+                  <h1>Welcome</h1>
+                  <h2>Please log in with GitHub to use the app.</h2>
+              </div>
+          }
           <Navbar user={user} onUserChange={setUser} />
 
           <Routes>

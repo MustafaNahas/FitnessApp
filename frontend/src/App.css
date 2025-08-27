@@ -24,11 +24,12 @@
 }
 .workout-card h2{
     color: rgb(0, 210, 0);
+    font-size: 2.5rem;
 }
 
 nav {
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     gap: 1rem;
     position: fixed;
     bottom: 0;
@@ -39,10 +40,17 @@ nav {
     padding: 1rem 0 1rem 0;
     text-align: center;
     z-index: 1000;
+
+
+}
+.userGreetingNav{
+    display: none;
 }
 
+
+
 nav button {
-    padding: 1rem 1rem;
+    padding: 1rem;
     border-radius: 8px;
     border: none;
     background: #444;
@@ -110,6 +118,12 @@ button:hover{
         border: 0.2rem solid;
         border-radius: 4px;
     }
+
+    .durationInput{
+        width: 20%;
+        min-width: 5rem;
+        text-align: center;
+    }
 }
 
 @media (min-width: 650px){
@@ -134,7 +148,7 @@ button:hover{
     nav {
         top: 0;
         bottom: auto;
-        padding: 1rem 0;
+        justify-content: space-evenly;
     }
     .InputForm , .ViewWorkoutDetails{
         flex-direction: row;
@@ -147,5 +161,9 @@ button:hover{
             justify-content: start;
             width: 100%;
         }
+    }
+
+    .userGreetingNav{
+        display: block;
     }
 }
