@@ -21,7 +21,7 @@ export default function HeartCheckbox({ checked = false, onChange,disableOnClick
     }
 
     return (
-        <div
+        <button type={"button"}
             onClick={()=>toggle(disableOnClick)}
             style={{
                 background: "transparent",
@@ -32,6 +32,6 @@ export default function HeartCheckbox({ checked = false, onChange,disableOnClick
             }}
         >
             <FontAwesomeIcon icon={isChecked ? solidHeart : regularHeart} />
-        </div>
+        </button>
     );
 }

@@ -164,8 +164,7 @@ export default function ViewWorkout() {
                     <div className={"buttonAlignment"}>
                         <button onClick={handleUpdate}><FontAwesomeIcon icon={faFloppyDisk} /> Save</button>
                         <button onClick={() => setIsEditing(false)}><FontAwesomeIcon icon={faXmark} /> Cancel</button>
-                        <>
-                            {/* Delete-Button */}
+
                             <button
                                 type="button"
                                 className="delete-btn"
@@ -173,7 +172,7 @@ export default function ViewWorkout() {
                             >
                                 <FontAwesomeIcon icon={faTrash} /> Delete
                             </button>
-                        </>
+
                     </div>
                     <div className={"break-row"}></div>
                     {successfullDelete&&<p>Deleted successfully.</p>}
@@ -227,16 +226,14 @@ export default function ViewWorkout() {
                     <div className={"buttonAlignment"}>
                         <button onClick={() => setIsEditing(true)}><FontAwesomeIcon icon={faPencil} /> Update </button>
 
-                        <>
-                            {/* Delete-Button */}
-                            <button
-                                type="button"
-                                className="delete-btn"
-                                onClick={(e) => { e.stopPropagation(); handleDelete(workout.id); }}
-                            >
-                                <FontAwesomeIcon icon={faTrash} /> Delete
-                            </button>
-                        </>
+                        <button
+                            type="button"
+                            className="delete-btn"
+                            onClick={(e) => { e.stopPropagation(); handleDelete(workout.id); }}
+                        >
+                            <FontAwesomeIcon icon={faTrash} /> Delete
+                        </button>
+
                     </div>
                     <div className={"break-row"}></div>
                     {successfullDelete&&<p>Deleted successfully.</p>}
