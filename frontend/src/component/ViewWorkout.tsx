@@ -4,12 +4,24 @@ import {
 } from "react";
 import axios from "axios";
 import type {workoutType} from "../type/workoutType.ts";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faDumbbell, faPersonBiking, faPersonRunning, faPersonWalking, faTrash} from "@fortawesome/free-solid-svg-icons";
+import {
+    faDumbbell, faFloppyDisk,
+    faPencil,
+    faPersonBiking,
+    faPersonRunning,
+    faPersonWalking,
+    faTrash, faXmark
+} from "@fortawesome/free-solid-svg-icons";
+import HeartCheckbox from "./FavoriteCheckbox.tsx";
 
 export default function ViewWorkout() {
+    const nav=useNavigate();
+
+
     const {id} = useParams();
+    const [successfullDelete, setSuccessfullDelete] = useState<boolean>(false);
     const [workout, setWorkout] = useState<workoutType | null>(null);
     const [isEditing, setIsEditing] = useState<boolean>(false);
     const [workoutName, setWorkoutName] = useState<string>("Running");
@@ -74,18 +86,19 @@ export default function ViewWorkout() {
     };
 
     async function handleDelete(id: string) {
-        const confirmed = window.confirm("Möchten Sie dieses Workout wirklich löschen?");
-        if (!confirmed) return;
-
         // Optimistic UI
         const prev = [...workouts];
         setWorkouts(ws => ws.filter(w => w.id !== id));
 
         try {
-            await axios.delete(`/api/workouts/${id}`);
+            await axios.delete(`/api/workouts/${id}`)
+                .then(() => {
+                    setSuccessfullDelete(true);
+                    setTimeout(() => { nav("/workouts") }, 5000)}
+                )
         } catch (e) {
             console.error(e);
-            alert("Fehler beim Löschen des Workouts");
+            alert("Failed by deleting");
             setWorkouts(prev); // rollback bei Fehler
         }
     }
@@ -127,31 +140,42 @@ export default function ViewWorkout() {
                            min="00:00" max="23:59" step={60}  id={"Time"} name={"Time"}
                            onChange={(e) => setStartTime(e.target.value)}/>
                     </div>
-                    <div>
-                    <label htmlFor={"favorite"}>Favorite:</label>
-                    <input type={"checkbox"} checked={favorite}  id={"favorite"} name={"favorite"}
-                           onChange={e=>setFavorite(e.target.checked)}/>
-                    </div>
+
                     <div>
                     <label htmlFor={"Duration"}>Duration:</label>
-                    <input type={"number"} value={duration ?? ""} min={1} placeholder={"20"} id={"Duration"} name={"Duration"}
+                    <div className={"break-row"}></div>
+                    <input className={"durationInput"} type={"number"} value={duration ?? ""} min={1} placeholder={"20"} id={"Duration"} name={"Duration"}
                            onChange={e=> setDuration(Number(e.target.value))}/>
+                    </div>
+                    <div>
+                        <label htmlFor={"favorite"}>Favorite:</label>
+                        <div className={"break-row"}></div>
+                        <div>
+                            <HeartCheckbox
+                                checked={favorite}
+                                disableOnClick={false}
+                                onChange={(val:boolean) =>{
+                                    setFavorite(val);
+                                }}
+                            />
+                        </div>
                     </div>
                     <div className={"break-row"}></div>
                     <div className={"buttonAlignment"}>
-                        <button onClick={handleUpdate}>save</button>
-                        <button onClick={() => setIsEditing(false)}>cancel</button>
-                        <>
-                            {/* Delete-Button */}
+                        <button onClick={handleUpdate}><FontAwesomeIcon icon={faFloppyDisk} /> Save</button>
+                        <button onClick={() => setIsEditing(false)}><FontAwesomeIcon icon={faXmark} /> Cancel</button>
+
                             <button
                                 type="button"
                                 className="delete-btn"
                                 onClick={(e) => { e.stopPropagation(); handleDelete(workout.id); }}
                             >
-                                <FontAwesomeIcon icon={faTrash} /> Löschen
+                                <FontAwesomeIcon icon={faTrash} /> Delete
                             </button>
-                        </>
+
                     </div>
+                    <div className={"break-row"}></div>
+                    {successfullDelete&&<p>Deleted successfully.</p>}
                 </div>
                 ) : (
                 <div className={"ViewWorkoutDetails"} >
@@ -181,31 +205,38 @@ export default function ViewWorkout() {
                         <input disabled type={"time"} value={startTime} placeholder={startTime}
                                min="00:00" max="23:59" step={60}  id={"Time"} name={"Time"}/>
                     </div>
-                    <div>
-                        <label htmlFor={"favorite"}>Favorite:</label>
-                        <input disabled type={"checkbox"} checked={favorite}  id={"favorite"} name={"favorite"}/>
-                    </div>
+
                     <div>
                         <label htmlFor={"Duration"}>Duration:</label>
-                        <input disabled type={"number"} value={duration ?? ""} min={1} placeholder={"20"} id={"Duration"} name={"Duration"}/>
+                        <div className={"break-row"}></div>
+                        <input className={"durationInput"} disabled type={"number"} value={duration ?? ""} min={1} placeholder={"20"} id={"Duration"} name={"Duration"}/>
+                    </div>
+                    <div>
+                        <label htmlFor={"favorite"}>Favorite:</label>
+                        <div className={"break-row"}></div>
+                        <div>
+                            <HeartCheckbox
+                                checked={favorite}
+                                disableOnClick={true}
+                            />
+                        </div>
                     </div>
                     <div className={"break-row"}></div>
 
                     <div className={"buttonAlignment"}>
-                        <button onClick={() => setIsEditing(true)}>update</button>
+                        <button onClick={() => setIsEditing(true)}><FontAwesomeIcon icon={faPencil} /> Update </button>
 
-                        <>
-                            {/* Delete-Button */}
-                            <button
-                                type="button"
-                                className="delete-btn"
-                                onClick={(e) => { e.stopPropagation(); handleDelete(workout.id); }}
-                            >
-                                <FontAwesomeIcon icon={faTrash} /> Löschen
-                            </button>
-                        </>
+                        <button
+                            type="button"
+                            className="delete-btn"
+                            onClick={(e) => { e.stopPropagation(); handleDelete(workout.id); }}
+                        >
+                            <FontAwesomeIcon icon={faTrash} /> Delete
+                        </button>
+
                     </div>
-
+                    <div className={"break-row"}></div>
+                    {successfullDelete&&<p>Deleted successfully.</p>}
                 </div>
 
             )}
